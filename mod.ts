@@ -1,7 +1,6 @@
 import createClient from "https://raw.githubusercontent.com/Skillz4Killz/Discordeno/master/module/client.ts";
 import config from "./config.ts";
 import { Intents } from "https://raw.githubusercontent.com/Skillz4Killz/Discordeno/master/types/options.ts";
-import { cache } from "https://raw.githubusercontent.com/Skillz4Killz/Discordeno/master/utils/cache.ts";
 
 const storage = new Map<string, number>();
 
@@ -30,21 +29,23 @@ config.slowmodes.forEach((slowmode) => {
 
 createClient({
   token: config.token,
-  botID: "",
+  botID: "675412054529540107",
   intents: [Intents.GUILDS, Intents.GUILD_MESSAGES],
   eventHandlers: {
     ready: () => console.log(`Bot is online.`),
     messageCreate: (message) => {
-      if (message.author.bot || !message.member) return;
+      if (message.author.bot || !message.member()) return;
+      console.log("pass", 1);
       const channelSlowmodeData = slowmodes.find((slowmode) =>
         slowmode.channelID === message.channel.id
       );
       if (!channelSlowmodeData) return;
+      console.log("pass", 2);
       const lastMessageDate =
         storage.get(`${message.author.id}${message.channel.id}`) || 0;
 
-      const guild = message.member.guild();
-      const relevantRoleID = message.member.roles
+      const guild = message.member().guild();
+      const relevantRoleID = message.member().roles
         .sort((a, b) =>
           guild.roles.get(b)!.position - guild.roles.get(a)!.position
         ).find((id) =>
@@ -55,10 +56,15 @@ createClient({
       const slowmode = channelSlowmodeData.slowmodes.find((slowmode) =>
         slowmode.roleID === relevantRoleID
       );
-
+      console.log(guild)
+      console.log('---')
+      console.log(relevantRoleID)
+      console.log('')
       if (!slowmode) return;
+      console.log("pass", 3);
       const canSendMessageDate = slowmode.time + lastMessageDate;
       if (canSendMessageDate > Date.now()) {
+        console.log("pass if");
         message.delete();
         const time = canSendMessageDate - Date.now();
 
@@ -75,6 +81,7 @@ createClient({
             setTimeout(() => m.delete(), 2000);
           });
       } else {
+        console.log("pass else");
         storage.set(`${message.author.id}${message.channel.id}`, Date.now());
       }
     },

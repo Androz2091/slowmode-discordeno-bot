@@ -47,34 +47,32 @@ createClient({
       const relevantRoleID = message.member.roles
         .sort((a, b) =>
           guild.roles.get(b)!.position - guild.roles.get(a)!.position
-        ).find((id) => channelSlowmodeData.slowmodes.find(slowmode => slowmode.roleID === id));
-      const slowmode = channelSlowmodeData.slowmodes.find(slowmode => slowmode.roleID === relevantRoleID);
+        ).find((id) =>
+          channelSlowmodeData.slowmodes.find((slowmode) =>
+            slowmode.roleID === id
+          )
+        );
+      const slowmode = channelSlowmodeData.slowmodes.find((slowmode) =>
+        slowmode.roleID === relevantRoleID
+      );
 
       if (!slowmode) return;
       const canSendMessageDate = slowmode.time + lastMessageDate;
       if (canSendMessageDate > Date.now()) {
         message.delete();
         const time = canSendMessageDate - Date.now();
-        message.member
-          .send(
-            config.messages.waitMP
-              .replace("{{time}}", time.toString())
-              .replace("{{user}}", message.author.toString())
-              .replace("{{channel}}", message.channel.toString()),
+
+        message
+          .channel.sendMessage(
+            `${message.author.mention}, ${
+              config.messages.wait
+                .replace("{{time}}", time.toString())
+                .replace("{{user}}", message.author.toString())
+                .replace("{{channel}}", message.channel.toString())
+            }`,
           )
-          .catch(() => {
-            message
-              .reply(
-                config.messages.wait
-                  .replace("{{time}}", time.toString())
-                  .replace("{{user}}", message.author.toString())
-                  .replace("{{channel}}", message.channel.toString()),
-              )
-              .then((m) => {
-                m.delete({
-                  timeout: 2000,
-                });
-              });
+          .then((m) => {
+            setTimeout(() => m.delete(), 2000);
           });
       } else {
         storage.set(`${message.author.id}${message.channel.id}`, Date.now());

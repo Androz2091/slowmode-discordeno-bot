@@ -1,5 +1,6 @@
 export default {
 	"token": "YOUR_DISCORD_BOT_TOKEN",
+	"botID": "YOUR_DISCORD_BOT_ID",
 	"locale": "en",
 	"messages": {
 			"wait": "You need to wait **{{time}}** before being able to send a new message!",

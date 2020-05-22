@@ -29,7 +29,7 @@ config.slowmodes.forEach((slowmode) => {
 
 createClient({
   token: config.token,
-  botID: "675412054529540107",
+  botID: config.botID,
   intents: [Intents.GUILDS, Intents.GUILD_MESSAGES],
   eventHandlers: {
     ready: () => console.log(`Bot is online.`),
